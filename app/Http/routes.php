@@ -1,4 +1,14 @@
 <?php
+/*
+|--------------------------------------------------------------------------
+| Import class Post
+|--------------------------------------------------------------------------
+|
+*/
+
+use App\Post;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -15,11 +25,59 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/post/{id}', 'PostsController@show_post');
+//Route::get('/post/{id}', 'PostsController@show_post');
+//
+//Route::resource('/posts', 'PostsController');
+//
+//Route::get('/contact', 'PostsController@contact');
+//
+//Route::get('/about/{name}', 'PostsController@about');
 
-Route::resource('/posts', 'PostsController');
 
-Route::get('/contact', 'PostsController@contact');
+/*
+ * INSERT DATA TO DATABASE
+ */
 
-Route::get('/about/{name}', 'PostsController@about');
+Route::get('/insert', function(){
+    DB::insert('insert into posts(title, content) values(?,?)', ['PHP with Laravel', 'This is most amazing thing that could happen']);
+});
 
+
+
+/*
+ |--------------------------------------------------------------
+ | DATANASE Raw SQL Queries
+ |--------------------------------------------------------------
+ */
+
+Route::get('/read', function(){
+    $results = DB::select('select * from posts');
+
+    $for_print = array();
+
+    foreach($results as $post){
+        array_push($for_print,$post->title);
+    }
+    //it returns every found title as array
+
+    return $for_print;
+});
+
+
+Route::get('/find', function(){
+//    $posts = Post::all();
+//
+//    foreach($posts as $post){
+//        return $post->title;
+//    }
+
+    if(Post::find(2)){
+        return Post::find(2)->title;
+    }else return "Not found !!";
+});
+
+
+Route::get('/findwhere', function(){
+    $posts = Post::where('id',2)->orderBy('id', 'desc')->take(1)->get();
+    foreach($posts as $post) return $post->title;
+});
